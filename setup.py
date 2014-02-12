@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='upr',
-    version='0.2',
+    version='0.3',
     description='Basic UPR client',
     author='Pavel Paulau',
     author_email='pavel.paulau@gmail.com',

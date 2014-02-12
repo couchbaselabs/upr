@@ -1,5 +1,4 @@
 import binascii
-import logging
 import Queue
 import struct
 
@@ -151,7 +150,6 @@ class StreamRequest(Operation):
 
     def add_response(self, opcode, keylen, extlen, status, cas, body):
         if opcode == C.CMD_STREAM_REQ:
-            logging.info("(Stream Request) Received OK")
             assert cas == 0
             assert keylen == 0
             assert extlen == 0
@@ -176,7 +174,6 @@ class StreamRequest(Operation):
             if status != C.SUCCESS:
                 return True
         elif opcode == C.CMD_STREAM_END:
-            logging.info("(Stream Request) Received stream end")
             assert cas == 0
             assert keylen == 0
             assert extlen == 4
@@ -187,7 +184,6 @@ class StreamRequest(Operation):
             self.ended = True
             return True
         elif opcode == C.CMD_MUTATION:
-            logging.info("(Stream Request) Received mutation")
             by_seqno, rev_seqno, flags, exp, lock_time, ext_meta_len, nru = \
                 struct.unpack(">QQIIIHB", body[0:31])
             key = body[31:31+keylen]
@@ -203,7 +199,6 @@ class StreamRequest(Operation):
                                 'key': key,
                                 'value': value})
         elif opcode == C.CMD_DELETION:
-            logging.info("(Stream Request) Received deletion")
             by_seqno, rev_seqno, ext_meta_len = \
                 struct.unpack(">QQH", body[0:18])
             key = body[18:18+keylen]
@@ -213,11 +208,8 @@ class StreamRequest(Operation):
                                 'rev_seqno': rev_seqno,
                                 'key': key})
         elif opcode == C.CMD_SNAPSHOT_MARKER:
-            logging.info("(Stream Request) Received snapshot marker")
             self.responses.put({'opcode': opcode,
                                 'vbucket': status})
-        else:
-            logging.error("(Stream Request) Unknown response: %s" % opcode)
 
         return False
 
